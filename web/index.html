@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0B0E17">
+  <meta name="description" content="ShareTime - Playlist YouTube condivise tra amici">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="ShareTime">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>ShareTime</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body {
+      background-color: #0B0E17;
+      color: #F1F5F9;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    #loading {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      background-color: #0B0E17;
+      transition: opacity 0.4s ease-out;
+    }
+    .radar-spinner {
+      width: 56px;
+      height: 56px;
+      border: 3px solid rgba(0, 229, 255, 0.15);
+      border-top-color: #00E5FF;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #00E5FF;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .loading-sub {
+      font-size: 13px;
+      color: #94A3B8;
+    }
+    #error-banner {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 20px;
+      right: 20px;
+      background-color: #1B2335;
+      border: 1.5px solid #FF6B4A;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 2000;
+      color: #F1F5F9;
+      font-size: 13px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    #error-banner button {
+      margin-top: 10px;
+      background: #00E5FF;
+      border: none;
+      color: #0B0E17;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+
+  <script>
+    window.addEventListener('error', function(event) {
+      console.error('Global error:', event);
+      var banner = document.getElementById('error-banner');
+      var msg = document.getElementById('error-msg');
+      if (banner && msg) {
+        banner.style.display = 'block';
+        msg.innerText = event.message || event;
+      }
+    });
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error('Unhandled rejection:', event);
+      var banner = document.getElementById('error-banner');
+      var msg = document.getElementById('error-msg');
+      if (banner && msg) {
+        banner.style.display = 'block';
+        msg.innerText = event.reason ? (event.reason.message || event.reason) : event;
+      }
+    });
+  </script>
+</head>
+<body>
+  <div id="loading">
+    <div class="radar-spinner"></div>
+    <div class="loading-title">ShareTime</div>
+    <div class="loading-sub">Connessione ai nodi radar...</div>
+  </div>
+
+  <div id="error-banner">
+    <strong style="color: #FF6B4A;">Avviso di compatibilità:</strong>
+    <p id="error-msg" style="margin: 6px 0; color: #94A3B8; font-size: 12px;"></p>
+    <p style="margin: 4px 0; font-size: 12px;">Se usi un blocco annunci o modalità risparmio dati nel browser, prova a disattivarli o apri l'app con Chrome.</p>
+    <button onclick="location.reload()">Ricarica Pagina</button>
+  </div>
+
+  <script>
+    function removeLoading() {
+      var loading = document.getElementById('loading');
+      if (loading && !loading.classList.contains('hidden')) {
+        loading.classList.add('hidden');
+        loading.style.opacity = '0';
+        loading.style.pointerEvents = 'none';
+        setTimeout(function() {
+          if (loading && loading.parentNode) {
+            loading.parentNode.removeChild(loading);
+          }
+        }, 400);
+      }
+    }
+
+    window.addEventListener('flutter-first-frame', removeLoading);
+
+    var observer = new MutationObserver(function() {
+      if (document.querySelector('flutter-view, flt-glass-pane, flt-scene-host')) {
+        setTimeout(removeLoading, 150);
+        observer.disconnect();
+      }
+    });
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    } else {
+      document.addEventListener('DOMContentLoaded', function() {
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
+    }
+
+    var checkInterval = setInterval(function() {
+      if (document.querySelector('flutter-view, flt-glass-pane, flt-scene-host')) {
+        removeLoading();
+        clearInterval(checkInterval);
+      }
+    }, 200);
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

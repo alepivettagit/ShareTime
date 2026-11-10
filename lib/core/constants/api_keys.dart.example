@@ -1,0 +1,7 @@
+/// Copy this file to `api_keys.dart` in the same folder (`lib/core/constants/api_keys.dart`).
+/// Optionally replace the placeholders with your restricted YouTube Data API v3 keys.
+/// If left as-is, ShareTime still works via the built-in oEmbed fallback (without video duration).
+class ApiKeys {
+  static const String youtubeAndroidKey = 'INSERISCI_LA_TUA_YOUTUBE_ANDROID_API_KEY';
+  static const String youtubeWebKey = 'INSERISCI_LA_TUA_YOUTUBE_WEB_API_KEY';
+}
